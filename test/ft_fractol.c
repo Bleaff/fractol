@@ -8,9 +8,9 @@ int	f_close(t_vars *vars)
 	return (0);
 }
 
-int create_trgb(int t, int r, int g, int b)
+int create_rgb(int r, int g, int b)
 {
-	return(t << 24 | r << 16 | g << 8 | b);
+	return(r << 16 | g << 8 | b);
 }
 
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
@@ -82,7 +82,7 @@ int ft_fractol_julia(t_data *img)
           }
           if (abs_c(z) < 2)
           {
-			  color = create_trgb(255, 255, (int)(abs_c(z) * 1000) % 255, 255);
+			  color = create_rgb(255, (int)(abs_c(z) * 1000) % 255, 255);
 			  my_mlx_pixel_put(img, floor(x), floor(y), color);
 			  printf("ABS(z) = %f\nSo iter = %d\n", abs_c(z), i);
 			  printf("color: %x\n",color);
@@ -106,6 +106,7 @@ int	main(void)
 	t_data	img;
 	t_vars	vars2;
 	t_data	img2;
+	printf("color is %x\n", create_rgb(250, 240, 230));
 
 	vars.mlx = mlx_init();
 	vars2.mlx = vars.mlx;

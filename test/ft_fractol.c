@@ -21,47 +21,7 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	*(unsigned int*)dst = color;
 }
 
-double abs_c(t_complex c)
-{
-	return (sqrt(c.re * c.re + c.im * c.im));
-}
-
-t_complex sqr_c(t_complex c)
-{
-	t_complex ans;
-
-	ans.re = (c.re * c.re)  - (c.im * c.im);
-	ans.im =  2 * c.re * c.im;
- 	return (ans);
-}
-
 int ft_fractol_mondelbrot(t_data *img)
-{
-	t_complex z;
-	t_complex pr;
-
-	for (int y = 0; y < W_SIZE; ++y)
-      for (int x = 0; x < H_SIZE; ++x)
-      {
-		  z.re = 0;
-		  z.im = 0;
-          int i = 0;
-          while (i < 1000 && abs_c(z) < 2)
-          {
-			  pr = sqr_c(z);
-              z.re = pr.re + 1.0 * (x - W_SIZE/sqrt(2))/400;
-			  z.im = pr.im + 1.0 * (y - H_SIZE/ 3)/400;
-              ++i;
-          }
-          if (abs_c(z) < 2)
-          {
-			  my_mlx_pixel_put(img, floor(x), floor(y), 0x0);
-		  }
-      }
-	  return (1);
-}
-
-int ft_fractol_julia(t_data *img)
 {
 	int color;
 	t_complex z;
@@ -73,30 +33,63 @@ int ft_fractol_julia(t_data *img)
 		  z.re = 0;
 		  z.im = 0;
           int i = 0;
-          while (i < 1000 && abs_c(z) < 2)
+          while (i < 100 && abs_c(z) < 2)
           {
 			  pr = sqr_c(z);
               z.re = pr.re + 1.0 * (x - W_SIZE/sqrt(2))/400;
 			  z.im = pr.im + 1.0 * (y - H_SIZE/ 3)/400;
               ++i;
           }
-          if (abs_c(z) < 2)
+          if (abs_c(z) > 2)
           {
-			  color = create_rgb(255, (int)(abs_c(z) * 1000) % 255, 255);
+			  color = create_rgb((int)(abs_c(z) * 133) % 255, (int)(abs_c(z) * 1000) % 255, (int)(abs_c(z) * 2912) % 255);
 			  my_mlx_pixel_put(img, floor(x), floor(y), color);
-			  printf("ABS(z) = %f\nSo iter = %d\n", abs_c(z), i);
-			  printf("color: %x\n",color);
 		  }
       }
 	  return (1);
 }
 
+int ft_fractol_julia(t_data *img)
+{
+	int p = 200, iter = 100;
+	int a,b;
+	t_complex c, z;
+	int i = 0;
+
+	c.re = -0.2;
+	c.im = 0.75;
+	for (int y = -p; y < p; y++) {
+		for (int x = -p; x < p; x++) {
+			a = x;
+			b = y;
+			z.re = a;
+			z.im = b;
+			int good = 1;
+			t_complex ans;
+			while (i < iter){
+				ans = sqr_c(z);
+				z.re = ans.re + c.re;
+				z.im = ans.im + c.im;
+				i++;
+				if (abs_c(z) > 2)
+				{
+					good = 0;
+					break;
+				}
+			}
+			if (good && i == iter)
+				my_mlx_pixel_put(img, x + sqrt(2)*p, y + sqrt(2)*p, 0x0);
+		}
+	}
+	return (1);
+}
+
 
 void ft_whiteboard(t_data *img)
 {
-	for (size_t w = 0; w < W_SIZE; w++) {
-		for (size_t h = 0; h < H_SIZE; h++) {
- 			my_mlx_pixel_put(img, w, h, 0xfffafa);		}
+	for (size_t w = 0; w < 1200; w++) {
+		for (size_t h = 0; h < 600; h++) {
+ 			my_mlx_pixel_put(img, w, h, 0xffffff);		}
 	}
 }
 
@@ -106,27 +99,25 @@ int	main(void)
 	t_data	img;
 	t_vars	vars2;
 	t_data	img2;
-	printf("color is %x\n", create_rgb(250, 240, 230));
 
 	vars.mlx = mlx_init();
 	vars2.mlx = vars.mlx;
-	vars2.win = mlx_new_window(vars.mlx, W_SIZE, H_SIZE, "Julia");
+	vars2.win = mlx_new_window(vars.mlx, 1200, 600, "Julia");
 	vars.win = mlx_new_window(vars.mlx, W_SIZE, H_SIZE, "Mondelbrot");
-
 	img.img = mlx_new_image(vars.mlx,  W_SIZE, H_SIZE);
-	img2.img = mlx_new_image(vars.mlx, W_SIZE, H_SIZE);
+	img2.img = mlx_new_image(vars.mlx, 1200, 600);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
 								&img.endian);
 	img2.addr = mlx_get_data_addr(img2.img, &img2.bits_per_pixel, &img2.line_length,
 								&img2.endian);
-	ft_whiteboard(&img);
+	//ft_whiteboard(&img);
 	ft_whiteboard(&img2);
 
 	ft_fractol_mondelbrot(&img);
 	ft_fractol_julia(&img2);
 	mlx_put_image_to_window(vars.mlx, vars.win, img.img, 0, 0);
-	mlx_put_image_to_window(vars.mlx, vars2.win, img2.img, 0, 0);
+	mlx_put_image_to_window(vars2.mlx, vars2.win, img2.img, 0, 0);
 
-	mlx_hook(vars.win, 2, 1L<<0, f_close, &vars);
-	mlx_loop(vars.mlx);
+	mlx_hook(vars2.win, 2, 1L<<0, f_close, &vars2);
+	mlx_loop(vars2.mlx);
 }

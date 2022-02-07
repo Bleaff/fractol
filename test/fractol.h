@@ -28,5 +28,13 @@ typedef struct s_complex {
   double im;
 }	t_complex;
 
+int	f_close(t_vars *vars);
+int create_rgb(int r, int g, int b);
+void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
+
+double abs_c(t_complex c);
+t_complex sum_c(t_complex a, t_complex b);
+t_complex sqr_c(t_complex c);
+
 int main(void);
 #endif

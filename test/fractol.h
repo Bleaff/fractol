@@ -9,6 +9,15 @@
 # define H_SIZE 1080
 
 
+enum STATES{
+	ON_KEYDOWN = 2,
+	ON_KEYUP = 3,
+	ON_MOUSEDOWN = 4,
+	ON_MOUSEUP = 5,
+	ON_MOUSEMOVE = 6,
+	ON_EXPOSE = 12,
+	ON_DESTROY = 17
+};
 
 typedef struct	s_vars {
 	void	*mlx;
@@ -28,7 +37,7 @@ typedef struct s_complex {
   double im;
 }	t_complex;
 
-int	f_close(t_vars *vars);
+int	f_close(void);
 int create_rgb(int r, int g, int b);
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 

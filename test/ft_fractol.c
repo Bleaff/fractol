@@ -5,8 +5,17 @@
 int	f_close(void)
 {
 	exit(0);
+}
+
+int print_key(int keycode, void *param)
+{
+	printf("%d keycode\n", keycode);
+	(void)param;
+	if (keycode == 53)
+		exit(0);
 	return (0);
 }
+
 
 int create_rgb(int r, int g, int b)
 {
@@ -121,5 +130,7 @@ int	main(void)
 
 
 	mlx_hook(vars2.win, 17, 1L<<5, f_close, &vars2);
+	mlx_hook(vars2.win, 2, 1L<<0, print_key, &vars2);
+
 	mlx_loop(vars2.mlx);
 }

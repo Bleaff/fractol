@@ -31,16 +31,16 @@ int ft_fractol_mondelbrot(t_data *img)
 		  z.re = 0;
 		  z.im = 0;
           int i = 0;
-          while (i < 2000 && abs_c(z) < 2)
+          while (i < 100 && abs_c(z) < 2)
           {
 			  pr = sqr_c(z);
-              z.re = pr.re + 1.0 * (x - W_SIZE/sqrt(2))/img->scale;
-			  z.im = pr.im + 1.0 * (y - H_SIZE/ 3)/img->scale;
+              z.re = pr.re + 1.0 * (x - W_SIZE/sqrt(2) - W_SIZE / 2 + img->x)/img->scale;
+			  z.im = pr.im + 1.0 * (y - H_SIZE/ 3 - H_SIZE / 2 + img->y)/img->scale;
               ++i;
           }
           if (abs_c(z) < 2)
           {
-			  color = create_rgb((int)(abs_c(z) * 777) % 255, (int)(abs_c(z) * 9321) % 255, (int)(abs_c(z) * 2912) % 255);
+			  color = create_rgb((int)(abs_c(z) * 777) % 255, (int)(abs_c(z) * 921) % 255, (int)(abs_c(z) * 291) % 255);
 			  my_mlx_pixel_put(img, floor(x), floor(y), color);
 		  }
       }
@@ -92,29 +92,34 @@ void ft_whiteboard(t_data *img, int color)
 	}
 }
 
-// int	zoom(int keycode, void *img_old)
-// {
-// 	t_data *_c;
-//
-// 	_c = (t_data *)img_old;
-// 	printf("%d\n", keycode);
-//
-// 	if (keycode == ON_MOUSEUP)
-// 	{
-// 		t_data &img;
-// 		img->scale = 2 * _c->scale;
-// 		img->win = _c->win;
-// 		img->mlx = _c->mlx;
-// 		img->img = mlx_new_image(img->mlx,  W_SIZE, H_SIZE);
-// 		img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
-// 		ft_whiteboard(img, 0x0);
-// 		ft_fractol_mondelbrot(img);
-// 		mlx_put_image_to_window(img->mlx, img->win, img->img, 0, 0);
-// 	}
-// 	return (0);
-// }
+int	zoom(int keycode, int x, int y, void *img)
+{
+	t_data	*img_old;
 
-int print_key(int keycode, void *param)
+	img_old = (t_data *)img;
+	printf("%d\n", keycode);
+	if (keycode == ON_MOUSEUP)
+	{
+		img_old->x = x;
+		img_old->y = y;
+		img_old->scale *= 1.5;
+		ft_whiteboard(img_old, 0x0);
+		ft_fractol_mondelbrot(img_old);
+		mlx_put_image_to_window(img_old->mlx, img_old->win, img_old->img, 0, 0);
+	}
+	else if (keycode == ON_MOUSEDOWN)
+	{
+		img_old->x = x;
+		img_old->y = y;
+		img_old->scale /= 1.5;
+		ft_whiteboard(img_old, 0x0);
+		ft_fractol_mondelbrot(img_old);
+		mlx_put_image_to_window(img_old->mlx, img_old->win, img_old->img, 0, 0);
+	}
+	return (0);
+}
+
+int print_key(int keycode,void *param)
 {
 	t_data	*check;
 
@@ -130,7 +135,36 @@ int print_key(int keycode, void *param)
 	}
 	if (keycode == 6)
 	{
-		check->scale *= 3;
+		check->scale *= 1.5;
+		ft_whiteboard(check, 0x0);
+		ft_fractol_mondelbrot(check);
+		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
+
+	}
+	if (keycode == 126)
+	{
+		check->y -= 200;
+		ft_whiteboard(check, 0x0);
+		ft_fractol_mondelbrot(check);
+		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
+	}
+	if (keycode == 125)
+	{
+		check->y += 200;
+		ft_whiteboard(check, 0x0);
+		ft_fractol_mondelbrot(check);
+		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
+	}
+	if (keycode == 123)
+	{
+		check->x -= 200;
+		ft_whiteboard(check, 0x0);
+		ft_fractol_mondelbrot(check);
+		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
+	}
+	if (keycode == 124)
+	{
+		check->x += 200;
 		ft_whiteboard(check, 0x0);
 		ft_fractol_mondelbrot(check);
 		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
@@ -146,19 +180,17 @@ int	main(void)
 
 	img.mlx = mlx_init();
 	img.scale = 400.0;
+	img.x = W_SIZE / 2;
+	img.y = H_SIZE / 2;
 
 	img.win = mlx_new_window(img.mlx, W_SIZE, H_SIZE, "Fractals");
 
 	img.img = mlx_new_image(img.mlx,  W_SIZE, H_SIZE);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
-	printf("FUCK\n");
-
 	help_page(&img);
-	printf("FUCK\n");
 
 	mlx_hook(img.win, 17, 1L<<5, f_close, &img);
 	mlx_hook(img.win, 2, 1L<<0, print_key, &img);
-	//mlx_hook(img.win, 4, 1L<<0, zoom, &img);
-
+	mlx_hook(img.win, 4, 0, zoom, &img);
 	mlx_loop(img.mlx);
 }

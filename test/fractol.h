@@ -36,6 +36,8 @@ typedef struct	s_data {
 	int		endian;
 	t_complex complex;
 	double scale;
+	int x;
+	int y;
 }				t_data;
 
 int	f_close(void);

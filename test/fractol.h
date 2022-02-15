@@ -4,6 +4,8 @@
 # include <unistd.h>
 # include <math.h>
 # include <stdlib.h>
+#include <stdio.h>
+
 # include "../minilibx/mlx.h"
 # define W_SIZE 1080
 # define H_SIZE 1080
@@ -37,6 +39,11 @@ typedef struct s_complex {
   double im;
 }	t_complex;
 
+typedef struct s_datvar{
+	t_vars *vars;
+	t_data *img;
+}t_datvar;
+
 int	f_close(void);
 int create_rgb(int r, int g, int b);
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
@@ -44,6 +51,9 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 double abs_c(t_complex c);
 t_complex sum_c(t_complex a, t_complex b);
 t_complex sqr_c(t_complex c);
+
+int help_page(t_datvar *help);
+
 
 int main(void);
 #endif

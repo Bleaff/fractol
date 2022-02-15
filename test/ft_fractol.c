@@ -1,5 +1,4 @@
 #include "fractol.h"
-#include <stdio.h>
 
 
 int	f_close(void)
@@ -7,14 +6,7 @@ int	f_close(void)
 	exit(0);
 }
 
-int print_key(int keycode, void *param)
-{
-	printf("%d keycode\n", keycode);
-	(void)param;
-	if (keycode == 53)
-		exit(0);
-	return (0);
-}
+
 
 
 int create_rgb(int r, int g, int b)
@@ -95,42 +87,47 @@ int ft_fractol_julia(t_data *img, int color_scheme)
 	return (1);
 }
 
-void ft_whiteboard(t_data *img)
+void ft_whiteboard(t_data *img, int color)
 {
 	for (size_t w = 0; w < W_SIZE; w++) {
 		for (size_t h = 0; h < H_SIZE; h++) {
- 			my_mlx_pixel_put(img, w, h, 0xffffff);		}
+ 			my_mlx_pixel_put(img, w, h, color);		}
 	}
+}
+
+int print_key(int keycode, void *param)
+{
+	t_datvar	*check;
+
+	check = (t_datvar *)param;
+	printf("%d keycode\n", keycode);
+	if (keycode == 53)
+		exit(0);
+	if (keycode == 46)
+	{
+		ft_whiteboard(check->img, 0x0);
+		ft_fractol_mondelbrot(check->img);
+	}
+	return (0);
 }
 
 int	main(void)
 {
-	t_vars	vars;
-	t_data	img;
-	t_vars	vars2;
-	t_data	img2;
+	t_datvar *var_img;
+	printf("FUCK\n");
 
-	vars.mlx = mlx_init();
-	vars2.mlx = vars.mlx;
-	vars2.win = mlx_new_window(vars.mlx, W_SIZE, H_SIZE, "Julia");
-	vars.win = mlx_new_window(vars.mlx, W_SIZE, H_SIZE, "Mondelbrot");
-	img.img = mlx_new_image(vars.mlx,  W_SIZE, H_SIZE);
-	img2.img = mlx_new_image(vars.mlx, W_SIZE, H_SIZE);
-	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
-								&img.endian);
-	img2.addr = mlx_get_data_addr(img2.img, &img2.bits_per_pixel, &img2.line_length,
-								&img2.endian);
-	//ft_whiteboard(&img);
+	var_img = NULL;
+	&var_img->vars->mlx = mlx_init();
+	printf("FUCK_1\n");
+	var_img->vars->win = mlx_new_window(var_img->vars->mlx, W_SIZE, H_SIZE, "Fractals");
+	printf("FUCK__1\n");
+	var_img->img->img = mlx_new_image(var_img->vars->mlx,  W_SIZE, H_SIZE);
+	printf("FUCK___1\n");
+	var_img->img->addr = mlx_get_data_addr(var_img->img->img, &var_img->img->bits_per_pixel, &var_img->img->line_length, &var_img->img->endian);
+	help_page(var_img);
+	printf("FUCK_________\n");
+	mlx_hook(var_img->vars->win, 17, 1L<<5, f_close, var_img);
+	mlx_hook(var_img->vars->win, 2, 1L<<0, print_key, var_img);
 
-	ft_fractol_mondelbrot(&img);
-	mlx_put_image_to_window(vars.mlx, vars.win, img.img, 0, 0);
-	ft_whiteboard(&img2);
-	ft_fractol_julia(&img2, 132);
-	mlx_put_image_to_window(vars2.mlx, vars2.win, img2.img, 0, 0);
-
-
-	mlx_hook(vars2.win, 17, 1L<<5, f_close, &vars2);
-	mlx_hook(vars2.win, 2, 1L<<0, print_key, &vars2);
-
-	mlx_loop(vars2.mlx);
+	mlx_loop(var_img->vars->mlx);
 }

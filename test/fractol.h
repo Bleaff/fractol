@@ -21,28 +21,22 @@ enum STATES{
 	ON_DESTROY = 17
 };
 
-typedef struct	s_vars {
-	void	*mlx;
-	void	*win;
-}				t_vars;
-
-typedef struct	s_data {
-	void	*img;
-	char	*addr;
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-}				t_data;
-
 typedef struct s_complex {
   double re;
   double im;
 }	t_complex;
 
-typedef struct s_datvar{
-	t_vars *vars;
-	t_data *img;
-}t_datvar;
+typedef struct	s_data {
+	void	*mlx;
+	void	*win;
+	void	*img;
+	char	*addr;
+	int		bits_per_pixel;
+	int		line_length;
+	int		endian;
+	t_complex complex;
+	double scale;
+}				t_data;
 
 int	f_close(void);
 int create_rgb(int r, int g, int b);
@@ -52,7 +46,7 @@ double abs_c(t_complex c);
 t_complex sum_c(t_complex a, t_complex b);
 t_complex sqr_c(t_complex c);
 
-int help_page(t_datvar *help);
+int help_page(t_data *help);
 
 
 int main(void);

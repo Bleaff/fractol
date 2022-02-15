@@ -6,9 +6,6 @@ int	f_close(void)
 	exit(0);
 }
 
-
-
-
 int create_rgb(int r, int g, int b)
 {
 	return(r << 16 | g << 8 | b);
@@ -37,8 +34,8 @@ int ft_fractol_mondelbrot(t_data *img)
           while (i < 2000 && abs_c(z) < 2)
           {
 			  pr = sqr_c(z);
-              z.re = pr.re + 1.0 * (x - W_SIZE/sqrt(2))/400;
-			  z.im = pr.im + 1.0 * (y - H_SIZE/ 3)/400;
+              z.re = pr.re + 1.0 * (x - W_SIZE/sqrt(2))/img->scale;
+			  z.im = pr.im + 1.0 * (y - H_SIZE/ 3)/img->scale;
               ++i;
           }
           if (abs_c(z) < 2)
@@ -95,39 +92,73 @@ void ft_whiteboard(t_data *img, int color)
 	}
 }
 
+// int	zoom(int keycode, void *img_old)
+// {
+// 	t_data *_c;
+//
+// 	_c = (t_data *)img_old;
+// 	printf("%d\n", keycode);
+//
+// 	if (keycode == ON_MOUSEUP)
+// 	{
+// 		t_data &img;
+// 		img->scale = 2 * _c->scale;
+// 		img->win = _c->win;
+// 		img->mlx = _c->mlx;
+// 		img->img = mlx_new_image(img->mlx,  W_SIZE, H_SIZE);
+// 		img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
+// 		ft_whiteboard(img, 0x0);
+// 		ft_fractol_mondelbrot(img);
+// 		mlx_put_image_to_window(img->mlx, img->win, img->img, 0, 0);
+// 	}
+// 	return (0);
+// }
+
 int print_key(int keycode, void *param)
 {
-	t_datvar	*check;
+	t_data	*check;
 
-	check = (t_datvar *)param;
+	check = (t_data *)param;
 	printf("%d keycode\n", keycode);
 	if (keycode == 53)
 		exit(0);
 	if (keycode == 46)
 	{
-		ft_whiteboard(check->img, 0x0);
-		ft_fractol_mondelbrot(check->img);
+		ft_whiteboard(check, 0x0);
+		ft_fractol_mondelbrot(check);
+		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
+	}
+	if (keycode == 6)
+	{
+		check->scale *= 3;
+		ft_whiteboard(check, 0x0);
+		ft_fractol_mondelbrot(check);
+		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
 	}
 	return (0);
 }
 
+
+
 int	main(void)
 {
-	t_datvar *var_img;
+	t_data img;
+
+	img.mlx = mlx_init();
+	img.scale = 400.0;
+
+	img.win = mlx_new_window(img.mlx, W_SIZE, H_SIZE, "Fractals");
+
+	img.img = mlx_new_image(img.mlx,  W_SIZE, H_SIZE);
+	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
 	printf("FUCK\n");
 
-	var_img = NULL;
-	&var_img->vars->mlx = mlx_init();
-	printf("FUCK_1\n");
-	var_img->vars->win = mlx_new_window(var_img->vars->mlx, W_SIZE, H_SIZE, "Fractals");
-	printf("FUCK__1\n");
-	var_img->img->img = mlx_new_image(var_img->vars->mlx,  W_SIZE, H_SIZE);
-	printf("FUCK___1\n");
-	var_img->img->addr = mlx_get_data_addr(var_img->img->img, &var_img->img->bits_per_pixel, &var_img->img->line_length, &var_img->img->endian);
-	help_page(var_img);
-	printf("FUCK_________\n");
-	mlx_hook(var_img->vars->win, 17, 1L<<5, f_close, var_img);
-	mlx_hook(var_img->vars->win, 2, 1L<<0, print_key, var_img);
+	help_page(&img);
+	printf("FUCK\n");
 
-	mlx_loop(var_img->vars->mlx);
+	mlx_hook(img.win, 17, 1L<<5, f_close, &img);
+	mlx_hook(img.win, 2, 1L<<0, print_key, &img);
+	//mlx_hook(img.win, 4, 1L<<0, zoom, &img);
+
+	mlx_loop(img.mlx);
 }

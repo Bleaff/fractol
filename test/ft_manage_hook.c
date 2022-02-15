@@ -1,4 +1,4 @@
-//#include "fractol.h"
+#include "fractol.h"
 
 int print_key(int keycode, void *param)
 {

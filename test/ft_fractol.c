@@ -31,7 +31,7 @@ int ft_fractol_mondelbrot(t_data *img)
 		  z.re = 0;
 		  z.im = 0;
           int i = 0;
-          while (i < 100 && abs_c(z) < 2)
+          while (i < 5 && abs_c(z) < 2)
           {
 			  pr = sqr_c(z);
               z.re = pr.re + 1.0 * (x - W_SIZE/sqrt(2) - W_SIZE / 2 + img->x)/img->scale;
@@ -47,7 +47,7 @@ int ft_fractol_mondelbrot(t_data *img)
 	  return (1);
 }
 
-int ft_fractol_julia(t_data *img, int color_scheme)
+int ft_fractol_julia(t_data *img)
 {
 	int color;
 	t_complex z;
@@ -64,10 +64,10 @@ int ft_fractol_julia(t_data *img, int color_scheme)
 		while (x < H_SIZE)
 		{
 			++x;
-			z.re = (double)(x - W_SIZE/sqrt(2))/400;
-			z.im = (double)(y - H_SIZE/ 3)/400;
+			z.re = (x - W_SIZE/sqrt(2) - W_SIZE / 2 + img->x)/img->scale;
+			z.im = (y - H_SIZE/ 3 - H_SIZE / 2 + img->y)/img->scale;
 			int i = 0;
-			while (i < 100 && abs_c(z) <= 2)
+			while (i < 50 && abs_c(z) <= 2)
 			{
 				pr = sqr_c(z);
 				z.re = pr.re + -0.2;
@@ -76,7 +76,7 @@ int ft_fractol_julia(t_data *img, int color_scheme)
 			}
 			if (abs_c(z) < 2)
 			{
-				color = create_rgb((int)(abs_c(z) * color_scheme) % 255, (int)(abs_c(z) * color_scheme * 7) % 255, (int)(abs_c(z) * color_scheme * 13) % 255);
+				color = create_rgb((int)(abs_c(z) * 777) % 255, (int)(abs_c(z) * 921) % 255, (int)(abs_c(z) * 291) % 255);
 				my_mlx_pixel_put(img, floor(x), floor(y), color);
 			}
 		}
@@ -104,16 +104,22 @@ int	zoom(int keycode, int x, int y, void *img)
 		img_old->y = y;
 		img_old->scale *= 1.5;
 		ft_whiteboard(img_old, 0x0);
-		ft_fractol_mondelbrot(img_old);
+		if (img_old->fractal == 'M')
+			ft_fractol_mondelbrot(img_old);
+		else
+			ft_fractol_julia(img_old);
 		mlx_put_image_to_window(img_old->mlx, img_old->win, img_old->img, 0, 0);
 	}
 	else if (keycode == ON_MOUSEDOWN)
 	{
 		img_old->x = x;
 		img_old->y = y;
-		img_old->scale /= 1.5;
+		img_old->scale /= 1.1;
 		ft_whiteboard(img_old, 0x0);
-		ft_fractol_mondelbrot(img_old);
+		if (img_old->fractal == 'M')
+			ft_fractol_mondelbrot(img_old);
+		else
+			ft_fractol_julia(img_old);
 		mlx_put_image_to_window(img_old->mlx, img_old->win, img_old->img, 0, 0);
 	}
 	return (0);
@@ -129,15 +135,22 @@ int print_key(int keycode,void *param)
 		exit(0);
 	if (keycode == 46)
 	{
+		check->fractal = 'm';
 		ft_whiteboard(check, 0x0);
-		ft_fractol_mondelbrot(check);
+		if (check->fractal == 'M')
+			ft_fractol_mondelbrot(check);
+		else
+			ft_fractol_julia(check);
 		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
 	}
 	if (keycode == 6)
 	{
 		check->scale *= 1.5;
 		ft_whiteboard(check, 0x0);
-		ft_fractol_mondelbrot(check);
+		if (check->fractal == 'M')
+			ft_fractol_mondelbrot(check);
+		else
+			ft_fractol_julia(check);
 		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
 
 	}
@@ -145,28 +158,48 @@ int print_key(int keycode,void *param)
 	{
 		check->y -= 200;
 		ft_whiteboard(check, 0x0);
-		ft_fractol_mondelbrot(check);
+		if (check->fractal == 'M')
+			ft_fractol_mondelbrot(check);
+		else
+			ft_fractol_julia(check);
 		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
 	}
 	if (keycode == 125)
 	{
 		check->y += 200;
 		ft_whiteboard(check, 0x0);
-		ft_fractol_mondelbrot(check);
+		if (check->fractal == 'M')
+			ft_fractol_mondelbrot(check);
+		else
+			ft_fractol_julia(check);
 		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
 	}
 	if (keycode == 123)
 	{
 		check->x -= 200;
 		ft_whiteboard(check, 0x0);
-		ft_fractol_mondelbrot(check);
+		if (check->fractal == 'M')
+			ft_fractol_mondelbrot(check);
+		else
+			ft_fractol_julia(check);
 		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
 	}
 	if (keycode == 124)
 	{
 		check->x += 200;
 		ft_whiteboard(check, 0x0);
-		ft_fractol_mondelbrot(check);
+		if (check->fractal == 'm')
+			ft_fractol_mondelbrot(check);
+		else if(check->fractal == 'j')
+			ft_fractol_julia(check);
+
+		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
+	}
+	if (keycode == 38)
+	{
+		check->fractal = 'j';
+		ft_whiteboard(check, 0xffffff);
+		ft_fractol_julia(check);
 		mlx_put_image_to_window(check->mlx, check->win, check->img, 0, 0);
 	}
 	return (0);
@@ -174,8 +207,9 @@ int print_key(int keycode,void *param)
 
 
 
-int	main(void)
+int	main(int argc, char **argv)
 {
+	(void) argc;
 	t_data img;
 
 	img.mlx = mlx_init();
@@ -187,9 +221,10 @@ int	main(void)
 
 	img.img = mlx_new_image(img.mlx,  W_SIZE, H_SIZE);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
+	img.fractal = *argv[1];
 	help_page(&img);
 
-	mlx_hook(img.win, 17, 1L<<5, f_close, &img);
+	mlx_hook(img.win, 17, 0, f_close, &img);
 	mlx_hook(img.win, 2, 1L<<0, print_key, &img);
 	mlx_hook(img.win, 4, 0, zoom, &img);
 	mlx_loop(img.mlx);

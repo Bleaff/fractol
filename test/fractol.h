@@ -38,6 +38,7 @@ typedef struct	s_data {
 	double scale;
 	int x;
 	int y;
+	char fractal;
 }				t_data;
 
 int	f_close(void);
@@ -51,5 +52,5 @@ t_complex sqr_c(t_complex c);
 int help_page(t_data *help);
 
 
-int main(void);
+int main(int argc,char **argv);
 #endif

@@ -1,7 +1,7 @@
 NAME = fractol
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -g
-SRC = 	ft_fractol.c ft_complex.c ft_support_page.c
+SRC = 	ft_fractol.c ft_utils.c ft_page.c ft_manage_hook.c
 HEADERS = fractol.h
 MINILIBX = minilibx/liblmx.a
 OBJ=$(SRC:.c=.o)

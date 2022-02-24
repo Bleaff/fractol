@@ -1,11 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_manage_hook.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bleaf <bleaf@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/02/19 15:02:48 by bleaf             #+#    #+#             */
+/*   Updated: 2022/02/23 00:05:38 by bleaf            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractol.h"
 
-int	f_close(void)
-{
-	exit(0);
-}
-
-int print_fractal(t_data *img)
+int	print_fractal(t_data *img)
 {
 	ft_whiteboard(img, 0x0);
 	ft_fractol(img);
@@ -18,39 +25,23 @@ int	zoom(int keycode, int x, int y, void *img)
 	t_data	*img_old;
 
 	img_old = (t_data *)img;
-	printf("%d\n", keycode);
-	if ((keycode == ON_MOUSEUP || keycode == ON_MOUSEDOWN) && img_old->fractal !='h')
+	if ((keycode == ON_MOUSEUP || keycode == ON_MOUSEDOWN)
+		&& img_old->fractal != 'h')
 	{
 		img_old->x = x;
 		img_old->y = y;
-		if(keycode == ON_MOUSEUP)
+		if (keycode == ON_MOUSEUP)
 			img_old->scale *= 1.5;
 		else
 			img_old->scale /= 1.1;
-		print_fractal(img_old); // ERRORS!
+		print_fractal(img_old);
 	}
 	return (0);
 }
 
-int print_key(int keycode,void *param)
+void	ft_process_arrows(int keycode, t_data *check)
 {
-	t_data	*check;
-
-	check = (t_data *)param;
-	printf("%d keycode\n", keycode);
-	if (keycode == 53)
-		exit(0);
-	else if (keycode == 46)
-	{
-		check->fractal = 'm';
-		print_fractal(check);
-	}
-	else if (keycode == 6 && check->fractal != 'h')
-	{
-		check->scale *= 1.5;
-		print_fractal(check);
-	}
-	else if (keycode == 126 && check->fractal != 'h')
+	if (keycode == 126 && check->fractal != 'h')
 	{
 		check->y -= 300;
 		print_fractal(check);
@@ -70,15 +61,55 @@ int print_key(int keycode,void *param)
 		check->x += 300;
 		print_fractal(check);
 	}
+}
+
+void	ft_choose_fractal(int keycode, t_data *check)
+{
+	if (keycode == 46)
+	{
+		check->fractal = 'm';
+		print_fractal(check);
+	}
 	else if (keycode == 38)
 	{
 		check->fractal = 'j';
 		print_fractal(check);
 	}
+	else if (keycode == 15 && check->fractal != 'h')
+	{
+		check->r += 10;
+		print_fractal(check);
+	}
+	else if (keycode == 5 && check->fractal != 'h')
+	{
+		check->g += 10;
+		print_fractal(check);
+	}
+	else if (keycode == 11 && check->fractal != 'h')
+	{
+		check->b += 10;
+		print_fractal(check);
+	}
+}
+
+int	print_key(int keycode, void *param)
+{
+	t_data	*check;
+
+	check = (t_data *)param;
+	if (keycode == 53)
+		exit(0);
+	else if (keycode == 6 && check->fractal != 'h')
+	{
+		check->scale *= 1.5;
+		print_fractal(check);
+	}
 	else if (keycode == 4)
 	{
-		check->fractal = 'j';
+		check->fractal = 'h';
 		help_page(check);
 	}
+	ft_choose_fractal(keycode, check);
+	ft_process_arrows(keycode, check);
 	return (0);
 }
